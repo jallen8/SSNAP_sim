@@ -1236,7 +1236,7 @@ int main()
    double Pi = 4.0 * atan(1.0);
    double MeVMass = 931.502; // MeV/c^2
    double ElCharge = 1.6e-19; // Coulombs
-   double SpeedOfLight = 299792458.0 // m/s
+   double SpeedOfLight = 299792458.0; // m/s
    double SecondToNS = 1000000000; // ns/s
    double MeVToJoules = 1.6e-13; // J/MeV
    
