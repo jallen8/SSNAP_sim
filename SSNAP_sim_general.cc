@@ -1235,7 +1235,7 @@ int main()
 	
    double Pi = 4.0 * atan(1.0);
    double MeVMass = 931.502; // MeV/c^2
-   double ElCharge = 1.6e-19; // Coulombs
+   double ElCharge = 1.609e-19; // Coulombs
    double SpeedOfLight = 299792458.0; // m/s
    double SecondToNS = 1000000000; // ns/s
    double MeVToJoules = 1.6e-13; // J/MeV
@@ -1276,25 +1276,26 @@ int main()
    Tree->Branch("LabThetaRec",&LabThetaRec,"LabThetaRec/D");
    Tree->Branch("LabEnergyRec",&LabEnergyRec,"LabEnergyRec/D");
    	ofstream outf("values.dat");
-   for (int i=0;i<10000;i++)
+	
+	
+   for (int i=0;i<10000;i++){
    //for (int i=0;i<5;i++)
-	{
-        Reaction->GenerateReaction(InputBeamEnergy);
-//Fill in Tree for the reaction
+	
+		Reaction->GenerateReaction(InputBeamEnergy);
+		
+		//Fill in Tree for the reaction
+		
         QVal = Reaction->m_QExcite;
-        //if( Reaction->m_InitExcitedE ==0)       
-            //cout << Reaction->m_Q << endl;
         ExcitedE = Reaction -> m_InitExcitedE;
         ExcitedEDist = Reaction -> m_ExcitedEspread;
         BeamEnergy = Reaction->T1;
-		period = 2*Pi*OutMass*931.502*0.00000000000016/charge/ElCharge/6/SpeedOfLight/SpeedOfLight*1000000000; //in ns
+		period = (2*Pi*OutMass*MeVMass*MeVToJoules*SecondToNS)/(charge*ElCharge*6*SpeedOfLight*SpeedOfLight); //in ns
 		Vcm = Reaction->m_COMVelocityBeam;
 		COMThetaOut = (180./Pi)*(Reaction->m_RandCOMThetaOut);
 		COMEnergyOut = Reaction->m_CenterOfMassEOut;
         LabThetaOut = (180./Pi)*(Reaction->m_LabthetaOut);
         LabEnergyOut = Reaction->m_LabEnergyOut;
         FinalZOut = Reaction->m_FinalZOut;
-//	cout << FinalZOut <<endl;
 	
 		heliosTheta = acos(1/(2*Pi)*(charge*1.609e-19*Bfield*FinalZOut-2*Pi*OutMass*Vcm)/sqrt(2*OutMass*LabEnergyOut+OutMass*OutMass*Vcm*Vcm - OutMass*Vcm*charge*1.602e-19*Bfield*FinalZOut/Pi));
 		heliosTheta = 180/Pi*acos(FinalZOut*sqrt(931.502*OutMass/(2*LabEnergyOut))/(SpeedOfLight*period/1000000000*100));
@@ -1308,13 +1309,13 @@ int main()
 		LabEnergyRec = Reaction->m_LabEnergyRec;
 		COMEnergyRec = Reaction->m_CenterOfMassEOut;
 	
-	PhiOut = Reaction->m_RandPhiOut;
-	PhiRec = Reaction->m_RandPhiRec;
+		PhiOut = Reaction->m_RandPhiOut;
+		PhiRec = Reaction->m_RandPhiRec;
 	
-	Tree->Fill();
-        {
+		Tree->Fill();
+        
         outf << LabEnergyOut << " " << FinalZOut << " " << COMThetaOut << " " << COMEnergyOut << endl;
-        }
+        
 	}
         
    f->Write();
@@ -1322,6 +1323,14 @@ int main()
    delete Reaction;
 
    delete rando;
+   
+   TH2D *EvsZ = new TH2D("EvsZ","Lab E vs z",600,0,150,400,0,50)
+   
+   for (int i=0;i<10000;i++){
+	   
+	   react->GetEntry(i)
+	   EvsZ->Fill(FinalZOut,LabEnergyOut)
+   }
 
    return 0;
 }   
